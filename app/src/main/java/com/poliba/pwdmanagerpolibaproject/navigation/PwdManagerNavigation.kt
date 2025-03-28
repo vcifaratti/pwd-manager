@@ -12,9 +12,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.poliba.pwdmanager.screens.AddPasswordScreen
+import com.poliba.pwdmanager.screens.SignupScreen
 import com.poliba.pwdmanagerpolibaproject.presentation.generatePwd.GeneratorScreen
 import com.poliba.pwdmanagerpolibaproject.navigation.BottomNavigationItem
 import com.poliba.pwdmanagerpolibaproject.navigation.MainScreenView
+import com.poliba.pwdmanagerpolibaproject.presentation.auth.AuthEvent
+import com.poliba.pwdmanagerpolibaproject.presentation.auth.AuthViewModel
+import com.poliba.pwdmanagerpolibaproject.presentation.auth.LoginScreen
 import com.poliba.pwdmanagerpolibaproject.presentation.generatePwd.GeneratorEvent
 import com.poliba.pwdmanagerpolibaproject.presentation.generatePwd.GeneratorViewModel
 import com.poliba.pwdmanagerpolibaproject.presentation.home.HomeEvent
@@ -22,7 +26,10 @@ import com.poliba.pwdmanagerpolibaproject.presentation.welcome.WelcomeEvent
 import com.poliba.pwdmanagerpolibaproject.presentation.home.HomeScreen
 import com.poliba.pwdmanagerpolibaproject.presentation.home.HomeViewModel
 import com.poliba.pwdmanagerpolibaproject.presentation.home.WelcomeScreen
+import com.poliba.pwdmanagerpolibaproject.presentation.profile.ProfileEvent
 import com.poliba.pwdmanagerpolibaproject.presentation.welcome.WelcomeViewModel
+import com.poliba.pwdmanagerpolibaproject.presentation.profile.ProfileScreen
+import com.poliba.pwdmanagerpolibaproject.presentation.profile.ProfileViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -50,8 +57,7 @@ fun NavGraphBuilder.welcomeNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.WELCOME, startDestination = WelcomeScreen.FirstScreen.route
     ) {
-
-        composable( route = WelcomeScreen.FirstScreen.route ) {
+        composable(route = WelcomeScreen.FirstScreen.route) {
             val viewModel = initViewModel<WelcomeViewModel>(
                 navController,
             )
@@ -60,6 +66,38 @@ fun NavGraphBuilder.welcomeNavGraph(navController: NavHostController) {
                 onEvent = { event ->
                     handleWelcomeEvent(
                         event,
+                        navController
+                    )
+                }
+            )
+        }
+
+        composable(route = AuthScreen.LoginScreen.route) { navBackStackEntry ->
+            val stackEntry =
+                remember(navBackStackEntry) { navController.getBackStackEntry(Graph.WELCOME) }
+            val viewModel = hiltViewModel<AuthViewModel>(stackEntry)
+            LoginScreen(
+                state = viewModel.state,
+                onEvent = { event ->
+                    handleAuthEvent(
+                        event,
+                        viewModel,
+                        navController
+                    )
+                }
+            )
+        }
+
+        composable(route = AuthScreen.SignupScreen.route) {navBackStackEntry ->
+            val stackEntry =
+                remember(navBackStackEntry) { navController.getBackStackEntry(Graph.WELCOME) }
+            val viewModel = hiltViewModel<AuthViewModel>(stackEntry)
+            SignupScreen(
+                state = viewModel.state,
+                onEvent = { event ->
+                    handleAuthEvent(
+                        event,
+                        viewModel,
                         navController
                     )
                 }
@@ -111,7 +149,15 @@ fun HomeNavGraph(navController: NavHostController) {
         composable(
             route = BottomNavigationItem.Profile.route
         ) { navBackStackEntry ->
-
+            val stackEntry =
+                remember(navBackStackEntry) { navController.getBackStackEntry(Graph.HOME) }
+            val viewModel = hiltViewModel<ProfileViewModel>(stackEntry)
+            ProfileScreen(
+                state = viewModel.state,
+                onEvent = { event ->
+                    handleProfileEvent(event, viewModel, navController)
+                }
+            )
         }
 
 
@@ -147,6 +193,12 @@ sealed class WelcomeScreen(val route: String) {
 }
 
 
+sealed class AuthScreen(val route: String) {
+    data object LoginScreen : AuthScreen(route = Screen.LoginScreen.route)
+    data object SignupScreen : AuthScreen(route = Screen.SignupScreen.route)
+}
+
+
 sealed class HomeScreen(val route: String) {
     data object AddPwdScreen : HomeScreen(route = Screen.AddNewPwdScreen.route)
 }
@@ -158,21 +210,70 @@ private fun handleWelcomeEvent(
     navController: NavHostController
 ) {
     when (event) {
-
         WelcomeEvent.OnViewPwdClick -> {
-//            navController.navigate(BottomNavigationItem.Home.route)
-            navController.navigate(Graph.HOME) {
-                popUpTo(Graph.WELCOME) {
+            navController.navigate(AuthScreen.LoginScreen.route)
+        }
+
+        WelcomeEvent.OnGeneratePwdClick -> {
+            navController.navigate(AuthScreen.LoginScreen.route)
+        }
+        else -> Unit
+    }
+}
+
+
+private fun handleAuthEvent(
+    event: AuthEvent,
+    viewModel: AuthViewModel,
+    navController: NavHostController
+) {
+    when (event) {
+        AuthEvent.OnLoginClick -> {
+            viewModel.onEvent(event)
+        }
+        AuthEvent.OnSignupClick -> {
+            viewModel.onEvent(event)
+        }
+        AuthEvent.OnNavigateToSignup -> {
+            navController.navigate(AuthScreen.SignupScreen.route)
+        }
+        AuthEvent.OnNavigateToLogin -> {
+            navController.navigate(AuthScreen.LoginScreen.route)
+        }
+        else -> viewModel.onEvent(event)
+    }
+
+    // Check authentication state after handling the event
+//    if (viewModel.state.isAuthenticated && event !is AuthEvent.OnLogoutClick) {
+//        navController.navigate(Graph.HOME) {
+//            popUpTo(Graph.WELCOME) {
+//                inclusive = true
+//            }
+//        }
+//    }
+}
+
+
+
+private fun handleProfileEvent(
+    event: ProfileEvent,
+    viewModel: ProfileViewModel,
+    navController: NavHostController
+) {
+    when (event) {
+        ProfileEvent.OnLogoutClick -> {
+            viewModel.onEvent(event)
+            navController.navigate(Graph.WELCOME) {
+                popUpTo(Graph.HOME) {
                     inclusive = true
                 }
             }
         }
 
-        WelcomeEvent.OnGeneratePwdClick -> {
-            navController.navigate(BottomNavigationItem.GeneratePassword.route)
-        }
-        else -> Unit
+        else -> viewModel.onEvent(event)
     }
+
+
 }
 
 

@@ -8,18 +8,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.poliba.pwdmanagerpolibaproject.presentation.auth.AuthEvent
+import com.poliba.pwdmanagerpolibaproject.presentation.auth.AuthState
 
 @Composable
 fun SignupScreen(
-    onSignupSuccess: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    state: AuthState,
+    onEvent: (AuthEvent) -> Unit
 ) {
-    var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        if (state.isSignupSuccess) {
+            // Show success message
+            onEvent(AuthEvent.OnSignupSuccess)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -35,18 +40,8 @@ fun SignupScreen(
         )
 
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        )
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
+            value = state.email,
+            onValueChange = { onEvent(AuthEvent.OnEmailChange(it)) },
             label = { Text("Email") },
             singleLine = true,
             modifier = Modifier
@@ -55,8 +50,8 @@ fun SignupScreen(
         )
 
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = state.password,
+            onValueChange = { onEvent(AuthEvent.OnPasswordChange(it)) },
             label = { Text("Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
@@ -66,8 +61,8 @@ fun SignupScreen(
         )
 
         OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            value = state.confirmPassword,
+            onValueChange = { onEvent(AuthEvent.OnConfirmPasswordChange(it)) },
             label = { Text("Confirm Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
@@ -87,21 +82,23 @@ fun SignupScreen(
         Button(
             onClick = {
                 when {
-                    username.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank() -> {
+                    state.email.isBlank() || state.password.isBlank() || state.confirmPassword.isBlank() -> {
                         showError = true
                         errorMessage = "All fields are required"
                     }
-                    password != confirmPassword -> {
+                    state.password != state.confirmPassword -> {
                         showError = true
                         errorMessage = "Passwords do not match"
                     }
-                    !email.contains("@") -> {
+                    !state.email.contains("@") -> {
                         showError = true
                         errorMessage = "Invalid email format"
                     }
                     else -> {
                         // Mock successful signup
-                        onSignupSuccess()
+                        onEvent(AuthEvent.OnSignupClick)
+                        showError = false
+                        errorMessage = ""
                     }
                 }
             },
@@ -113,7 +110,7 @@ fun SignupScreen(
         }
 
         TextButton(
-            onClick = onNavigateToLogin
+            onClick = { onEvent(AuthEvent.OnNavigateToLogin) }
         ) {
             Text("Already have an account? Login")
         }
@@ -124,7 +121,7 @@ fun SignupScreen(
 @Composable
 fun SignupScreenPreview() {
     SignupScreen(
-        onSignupSuccess = {},
-        onNavigateToLogin = {}
+        state = AuthState(),
+        onEvent = {}
     )
 }

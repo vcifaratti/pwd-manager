@@ -5,6 +5,8 @@ enum class Screen(
     val type: String = ""
 ) {
     WelcomeScreen(route = "WELCOME_SCREEN"),
+    LoginScreen(route = "LOGIN_SCREEN"),
+    SignupScreen(route = "SIGNUP_SCREEN"),
     AddNewPwdScreen(route = "ADD_NEW_PWD_SCREEN"),
 }
 

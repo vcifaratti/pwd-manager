@@ -8,7 +8,7 @@ sealed class BottomNavigationItem(val route: String, val icon: Int, val title: S
     object Profile : BottomNavigationItem("PROFILE", R.drawable.ic_launcher_foreground, "Profile")
 
     companion object {
-        fun getAll() = listOf(Home, GeneratePassword)
+        fun getAll() = listOf(Home, GeneratePassword, Profile)
     }
 
     }
