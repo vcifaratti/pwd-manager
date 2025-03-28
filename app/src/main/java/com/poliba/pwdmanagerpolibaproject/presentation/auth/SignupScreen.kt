@@ -19,7 +19,7 @@ fun SignupScreen(
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(state.isSignupSuccess) {
         if (state.isSignupSuccess) {
             // Show success message
             onEvent(AuthEvent.OnSignupSuccess)

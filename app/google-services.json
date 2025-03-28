@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "487524777891",
+    "firebase_url": "https://pwdmanagerpoliba-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "pwdmanagerpoliba",
     "storage_bucket": "pwdmanagerpoliba.firebasestorage.app"
   },

@@ -240,6 +240,14 @@ private fun handleAuthEvent(
         AuthEvent.OnNavigateToLogin -> {
             navController.navigate(AuthScreen.LoginScreen.route)
         }
+        AuthEvent.OnSignupSuccess, AuthEvent.OnLoginSuccess -> {
+            viewModel.onEvent(event)
+            navController.navigate(Graph.HOME) {
+                popUpTo(Graph.WELCOME) {
+                    inclusive = true
+                }
+            }
+        }
         else -> viewModel.onEvent(event)
     }
 
@@ -269,11 +277,7 @@ private fun handleProfileEvent(
                 }
             }
         }
-
-        else -> viewModel.onEvent(event)
     }
-
-
 }
 
 

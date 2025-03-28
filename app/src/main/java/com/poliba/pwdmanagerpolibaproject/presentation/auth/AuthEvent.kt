@@ -11,4 +11,5 @@ sealed class AuthEvent {
     data object OnNavigateToSignup : AuthEvent()
     data object OnNavigateToLogin : AuthEvent()
     data object OnSignupSuccess : AuthEvent()
+    data object OnLoginSuccess : AuthEvent()
 }

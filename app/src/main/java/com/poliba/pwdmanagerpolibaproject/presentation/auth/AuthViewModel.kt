@@ -57,12 +57,16 @@ class AuthViewModel @Inject constructor(
     private fun login() {
         viewModelScope.launch {
             try {
-                state = state.copy(isLoading = true, error = null)
+                state = state.copy(isLoading = true, error = null, isLoginSuccess = false)
                 auth.signInWithEmailAndPassword(state.email, state.password).await()
-                state = state.copy(isLoading = false)
+                state = state.copy(
+                    isLoading = false,
+                    isLoginSuccess = true
+                )
             } catch (e: Exception) {
                 state = state.copy(
                     isLoading = false,
+                    isLoginSuccess = false,
                     error = e.message ?: "An error occurred during login"
                 )
             }
@@ -79,6 +83,7 @@ class AuthViewModel @Inject constructor(
                 if (state.email.isBlank() || state.password.isBlank() ) {
                     state = state.copy(
                         isLoading = false,
+                        isSignupSuccess = false,
                         error = "All fields are required"
                     )
                     return@launch
@@ -87,6 +92,7 @@ class AuthViewModel @Inject constructor(
                 if (state.password != state.confirmPassword) {
                     state = state.copy(
                         isLoading = false,
+                        isSignupSuccess = false,
                         error = "Passwords do not match"
                     )
                     return@launch
@@ -95,6 +101,7 @@ class AuthViewModel @Inject constructor(
                 if (state.password.length < 6) {
                     state = state.copy(
                         isLoading = false,
+                        isSignupSuccess = false,
                         error = "Password must be at least 6 characters long"
                     )
                     return@launch

@@ -3,13 +3,14 @@ package com.poliba.pwdmanagerpolibaproject.presentation.profile
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.poliba.pwdmanagerpolibaproject.presentation.auth.AuthEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,16 +21,7 @@ fun ProfileScreen(
     var showLogoutDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Profile") },
-                navigationIcon = {
-                    IconButton(onClick = { /* Handle back navigation */ }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
+
     ) { padding ->
         Column(
             modifier = Modifier
@@ -43,7 +35,7 @@ fun ProfileScreen(
             Surface(
                 modifier = Modifier
                     .size(120.dp),
-                shape = MaterialTheme.shapes.medium,
+                shape = MaterialTheme.shapes.large,
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Box(
@@ -51,7 +43,7 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.Default.Face,
                         contentDescription = "Profile Picture",
                         modifier = Modifier.size(60.dp),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
@@ -61,8 +53,15 @@ fun ProfileScreen(
 
             // User Info
             Text(
-                text = "User Profile",
+                text = "User Email" ,
                 style = MaterialTheme.typography.headlineMedium
+            )
+
+            // Email
+            Text(
+                text = state.userEmail.ifEmpty { "mail not found" },
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -78,7 +77,7 @@ fun ProfileScreen(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Default.PlayArrow,
+                    imageVector = Icons.Default.Build,
                     contentDescription = "Logout",
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -112,4 +111,14 @@ fun ProfileScreen(
             }
         )
     }
-} 
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileScreenPreview() {
+    ProfileScreen(
+        state = ProfileState(),
+        onEvent = {}
+    )
+}

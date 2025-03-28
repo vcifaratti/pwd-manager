@@ -20,6 +20,13 @@ fun LoginScreen(
 ) {
     var showPassword by remember { mutableStateOf(false) }
 
+    LaunchedEffect(state.isLoginSuccess) {
+        if (state.isLoginSuccess) {
+            // Show success message
+            onEvent(AuthEvent.OnLoginSuccess)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
