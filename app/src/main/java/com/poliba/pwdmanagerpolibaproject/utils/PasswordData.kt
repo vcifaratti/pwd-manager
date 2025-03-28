@@ -1,9 +1,13 @@
 package com.poliba.pwdmanagerpolibaproject.utils
 
 data class PasswordData(
-    var title: String? = null,
-    val username: String? = null,
-    val password: String? = null,
-    val url: String? = null,
-    val notes: String? = null
-)
+    val title: String = "",
+    val username: String = "",
+    val password: String = "",
+    val url: String = "",
+    val notes: String = ""
+) {
+    fun isValid(): Boolean {
+        return title.isNotBlank() && username.isNotBlank() && password.isNotBlank()
+    }
+}

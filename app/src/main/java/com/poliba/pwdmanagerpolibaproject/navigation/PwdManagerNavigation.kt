@@ -273,7 +273,7 @@ private fun handleProfileEvent(
             viewModel.onEvent(event)
             navController.navigate(Graph.WELCOME) {
                 popUpTo(Graph.HOME) {
-                    inclusive = true
+                    inclusive = false
                 }
             }
         }

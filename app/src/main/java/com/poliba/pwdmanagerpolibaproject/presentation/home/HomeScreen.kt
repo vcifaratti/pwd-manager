@@ -68,17 +68,68 @@ fun HomeScreen(
                             onEvent(HomeEvent.OnDeletePassword(password))
                         },
                         onUrlClick = {
-                            if (password.url.isNotBlank()) {
+                            if (password.url?.isNotBlank() == true) {
                                 try {
                                     onEvent(HomeEvent.OnOpenLink(context, password.url))
                                 } catch (e: Exception) {
                                     // Handle invalid URL or other errors
                                 }
                             }
+                        },
+                        onCardClick = {
+                            onEvent(HomeEvent.OnViewPassword(password))
                         }
                     )
                 }
             }
+        }
+
+        // Password Viewing Dialog
+        state.viewingPassword?.let { password ->
+            AlertDialog(
+                onDismissRequest = { onEvent(HomeEvent.OnHidePassword) },
+                title = { Text("Password Details") },
+                text = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text("Title: ${password.title}")
+                        Text("Username: ${password.username}")
+                        Text("Password: ${password.getDecryptedPassword()}")
+                        password.url?.let { Text("URL: $it") }
+                        password.notes?.let { Text("Notes: $it") }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { onEvent(HomeEvent.OnHidePassword) }) {
+                        Text("Close")
+                    }
+                }
+            )
+        }
+
+        // Delete Confirmation Dialog
+        if (state.showDeleteConfirmation) {
+            AlertDialog(
+                onDismissRequest = { onEvent(HomeEvent.OnHideDeleteConfirmation) },
+                title = { Text("Delete Password") },
+                text = { Text("Are you sure you want to delete this password?") },
+                confirmButton = {
+                    TextButton(
+                        onClick = { onEvent(HomeEvent.OnConfirmDelete) }
+                    ) {
+                        Text("Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { onEvent(HomeEvent.OnHideDeleteConfirmation) }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }
@@ -87,14 +138,16 @@ fun HomeScreen(
 fun PasswordCard(
     password: PasswordEntity,
     onDeleteClick: () -> Unit,
-    onUrlClick: () -> Unit
+    onUrlClick: () -> Unit,
+    onCardClick: () -> Unit
 ) {
-    val hasUrl = password.url.isNotBlank()
+    val hasUrl = password.url?.isNotBlank()
     
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onCardClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -127,10 +180,10 @@ fun PasswordCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Password: ${password.password}",
+                text = "Password: •••••••••••••••",
                 style = MaterialTheme.typography.bodyMedium
             )
-            if (hasUrl) {
+            if (hasUrl == true) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -152,7 +205,7 @@ fun PasswordCard(
                     )
                 }
             }
-            if (password.notes.isNotBlank()) {
+            if (password.notes?.isNotBlank() == true) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Notes: ${password.notes}",
@@ -172,7 +225,6 @@ fun HomeScreenPreview() {
     )
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun PwdCardPreview() {
@@ -181,11 +233,12 @@ fun PwdCardPreview() {
             id = 0,
             title = "Prova",
             username = "prova",
-            password = "prova",
+            encryptedPassword = "prova",
             url = "https://www.prova.com",
             notes = "prova"
         ),
         onDeleteClick = {},
-        onUrlClick = {}
+        onUrlClick = {},
+        onCardClick = {}
     )
 }
