@@ -18,6 +18,7 @@ navigationRuntimeKtx =      "2.7.7"
 ksp =                   "2.0.20-1.0.25"
 compose-bom =               "2025.01.00"
 roomCommon = "2.6.1"
+firebase-bom = "32.7.2"
 
 
 [libraries]
@@ -55,6 +56,11 @@ navigation-runtime-ktx =        { group = "androidx.navigation", name = "navigat
 compose-bom =                   { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-material =              { group = "androidx.compose.material", name = "material" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database-ktx" }
 
 
 [plugins]

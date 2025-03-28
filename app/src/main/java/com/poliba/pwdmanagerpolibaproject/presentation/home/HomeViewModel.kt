@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.poliba.pwdmanagerpolibaproject.data.local.PasswordDao
 import com.poliba.pwdmanagerpolibaproject.data.local.PasswordEntity
+import com.poliba.pwdmanagerpolibaproject.data.remote.FirebaseSync
 import com.poliba.pwdmanagerpolibaproject.utils.PasswordData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val dao: PasswordDao
+    private val dao: PasswordDao,
+    private val firebaseSync: FirebaseSync
 ): ViewModel() {
 
     var state by mutableStateOf(HomeState())
@@ -43,13 +45,14 @@ class HomeViewModel @Inject constructor(
         when (event) {
             HomeEvent.OnAddPwdClick -> {
                 state = state.copy(
-                    showAddPasswordDialog = true
+                    showAddPasswordDialog = true,
+                    newPasswordData = PasswordData()
                 )
             }
             HomeEvent.OnBack -> {
                 state = state.copy(
                     showAddPasswordDialog = false,
-                    newPasswordData = PasswordData("", "", "", "", "")
+                    newPasswordData = null
                 )
             }
             is HomeEvent.OnPasswordDataChange -> {
@@ -66,6 +69,8 @@ class HomeViewModel @Inject constructor(
                             notes = event.passwordData.notes
                         )
                         dao.insertPassword(passwordEntity)
+                        // Upload to Firebase
+                        firebaseSync.uploadToFirebase("current_user_id", passwordEntity)
                         state = state.copy(
                             newPasswordData = null,
                             showAddPasswordDialog = false
@@ -92,6 +97,8 @@ class HomeViewModel @Inject constructor(
                 state.passwordToDelete?.let { password ->
                     viewModelScope.launch {
                         dao.deletePassword(password)
+                        // Delete from Firebase
+                        firebaseSync.deleteFromFirebase("current_user_id", password.id)
                         state = state.copy(
                             showDeleteConfirmation = false,
                             passwordToDelete = null
@@ -109,6 +116,8 @@ class HomeViewModel @Inject constructor(
                     )
                     updatedPassword.setPassword(event.newPassword)
                     dao.updatePassword(updatedPassword)
+                    // Update in Firebase
+                    firebaseSync.uploadToFirebase("current_user_id", updatedPassword)
                 }
             }
             is HomeEvent.OnSearchQueryChange -> {
