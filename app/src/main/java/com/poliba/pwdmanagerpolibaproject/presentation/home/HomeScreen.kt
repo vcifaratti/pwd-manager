@@ -1,5 +1,6 @@
 package com.poliba.pwdmanagerpolibaproject.presentation.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,10 +14,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.poliba.pwdmanagerpolibaproject.R
 import com.poliba.pwdmanagerpolibaproject.data.local.PasswordEntity
+import com.poliba.pwdmanagerpolibaproject.ui.theme.Blue400
+import com.poliba.pwdmanagerpolibaproject.ui.theme.Blue500
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,7 +153,10 @@ fun PasswordCard(
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clickable(onClick = onCardClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Blue400.copy(alpha = 1f),
+        )
     ) {
         Column(
             modifier = Modifier
@@ -163,7 +171,8 @@ fun PasswordCard(
                 Text(
                     text = password.title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
                 IconButton(onClick = onDeleteClick) {
                     Icon(
@@ -176,12 +185,14 @@ fun PasswordCard(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Username: ${password.username}",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Password: •••••••••••••••",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimary
             )
             if (hasUrl == true) {
                 Spacer(modifier = Modifier.height(4.dp))
@@ -192,7 +203,7 @@ fun PasswordCard(
                         .clickable { onUrlClick() }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.PlayArrow,
+                        painter = painterResource(id = R.drawable.icon_url),
                         contentDescription = "Open URL",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
@@ -209,7 +220,8 @@ fun PasswordCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Notes: ${password.notes}",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

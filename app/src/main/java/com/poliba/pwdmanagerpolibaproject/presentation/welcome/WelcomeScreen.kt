@@ -31,7 +31,12 @@ fun WelcomeScreen (
         Spacer(modifier = Modifier.height(24.dp))
         
         Button(
-            onClick = { onEvent(WelcomeEvent.OnViewPwdClick) }
+            onClick = { onEvent(WelcomeEvent.OnViewPwdClick) },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
+
         ) {
             Text("View Passwords")
         }
@@ -39,7 +44,11 @@ fun WelcomeScreen (
         Spacer(modifier = Modifier.height(16.dp))
         
         Button(
-            onClick = { onEvent(WelcomeEvent.OnGeneratePwdClick) }
+            onClick = { onEvent(WelcomeEvent.OnGeneratePwdClick) },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
             Text("Generate Password")
         }

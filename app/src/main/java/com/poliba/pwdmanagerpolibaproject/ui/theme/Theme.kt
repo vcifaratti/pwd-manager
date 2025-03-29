@@ -11,25 +11,59 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Blue500,
+    onPrimary = White,
+    primaryContainer = Blue700,
+    onPrimaryContainer = White,
+    secondary = Purple500,
+    onSecondary = White,
+    secondaryContainer = Purple700,
+    onSecondaryContainer = White,
+    tertiary = Blue300,
+    onTertiary = Black,
+    tertiaryContainer = Blue600,
+    onTertiaryContainer = White,
+    background = Gray900,
+    onBackground = White,
+    surface = Gray800,
+    onSurface = White,
+    surfaceVariant = Gray700,
+    onSurfaceVariant = White,
+    outline = Gray600,
+    inverseOnSurface = Gray900,
+    inverseSurface = Gray100,
+    inversePrimary = Blue700,
+    surfaceTint = Blue500,
+    outlineVariant = Gray700,
+    scrim = Black
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Blue500,
+    onPrimary = White,
+    primaryContainer = Blue100,
+    onPrimaryContainer = Blue900,
+    secondary = Purple500,
+    onSecondary = White,
+    secondaryContainer = Purple100,
+    onSecondaryContainer = Purple900,
+    tertiary = Blue300,
+    onTertiary = Black,
+    tertiaryContainer = Blue100,
+    onTertiaryContainer = Blue900,
+    background = Gray100,
+    onBackground = Black,
+    surface = White,
+    onSurface = Black,
+    surfaceVariant = Gray200,
+    onSurfaceVariant = Black,
+    outline = Gray400,
+    inverseOnSurface = Gray100,
+    inverseSurface = Gray900,
+    inversePrimary = Blue100,
+    surfaceTint = Blue500,
+    outlineVariant = Gray300,
+    scrim = Black
 )
 
 @Composable
@@ -44,7 +78,6 @@ fun PwdManagerPolibaProjectTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

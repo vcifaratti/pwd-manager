@@ -6,16 +6,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,11 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.poliba.pwdmanagerpolibaproject.ui.theme.Purple40
-import com.poliba.pwdmanagerpolibaproject.ui.theme.Purple80
 import com.replyconnect.smegconnect.navigation.Graph
 import com.replyconnect.smegconnect.navigation.HomeNavGraph
-
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -45,7 +43,6 @@ fun MainScreenView() {
                 )
             }
         }
-
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -61,50 +58,60 @@ fun MainScreenView() {
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-
-    BottomNavigation(
-        backgroundColor = Purple80,
-        contentColor = Color.White,
-        elevation = 5.dp
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        tonalElevation = 5.dp,
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
         BottomNavigationItem.getAll()
             .forEach { screen ->
+                val selected = currentRoute == screen.route
 
-            val selected = currentRoute == screen.route
-
-            BottomNavigationItem(
-                icon = {
-                    Icon(
-                        painterResource(id = screen.icon),
-                        contentDescription = screen.title,
-                        modifier = Modifier
-                            .padding(top = 16.dp, bottom = 8.dp)
-                            .size(24.dp),
-                        tint = if (selected) Purple40 else Color.White
-                )},
-                label = {
-                    Text(
-                        screen.title,
-                        textAlign = TextAlign.Center,
-                        color = if (selected) Purple40 else Color.White
-                    )},
-                selected = selected,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            painterResource(id = screen.icon),
+                            contentDescription = screen.title,
+                            modifier = Modifier
+                                .padding(top = 16.dp, bottom = 8.dp)
+                                .size(24.dp),
+                            tint = if (selected) 
+                                MaterialTheme.colorScheme.secondary 
+                            else 
+                                MaterialTheme.colorScheme.onPrimary
+                        )
+                    },
+                    label = {
+                        Text(
+                            screen.title,
+                            textAlign = TextAlign.Center,
+                            color = if (selected) 
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            else 
+                                MaterialTheme.colorScheme.onPrimary
+                        )
+                    },
+                    selected = selected,
+                    onClick = {
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                selectedContentColor = Color.Blue,
-                unselectedContentColor = Color.White
-            )
-        }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.secondary,
+                        selectedTextColor = MaterialTheme.colorScheme.secondary,
+                        unselectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                        unselectedTextColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                )
+            }
     }
 }
 
@@ -114,7 +121,6 @@ private fun showBottomBar(screen: String?): Boolean {
         else -> true
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

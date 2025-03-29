@@ -12,13 +12,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.poliba.pwdmanager.screens.AddPasswordScreen
-import com.poliba.pwdmanager.screens.SignupScreen
 import com.poliba.pwdmanagerpolibaproject.presentation.generatePwd.GeneratorScreen
 import com.poliba.pwdmanagerpolibaproject.navigation.BottomNavigationItem
 import com.poliba.pwdmanagerpolibaproject.navigation.MainScreenView
 import com.poliba.pwdmanagerpolibaproject.presentation.auth.AuthEvent
 import com.poliba.pwdmanagerpolibaproject.presentation.auth.AuthViewModel
 import com.poliba.pwdmanagerpolibaproject.presentation.auth.LoginScreen
+import com.poliba.pwdmanagerpolibaproject.presentation.auth.SignupScreen
 import com.poliba.pwdmanagerpolibaproject.presentation.generatePwd.GeneratorEvent
 import com.poliba.pwdmanagerpolibaproject.presentation.generatePwd.GeneratorViewModel
 import com.poliba.pwdmanagerpolibaproject.presentation.home.HomeEvent

@@ -8,10 +8,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.poliba.pwdmanagerpolibaproject.R
 
 @Composable
 fun LoginScreen(
@@ -37,6 +39,7 @@ fun LoginScreen(
         Text(
             text = "Password Manager",
             style = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
@@ -45,6 +48,11 @@ fun LoginScreen(
             onValueChange = { onEvent(AuthEvent.OnEmailChange(it)) },
             label = { Text("Email") },
             singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                cursorColor = MaterialTheme.colorScheme.primary
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
@@ -56,11 +64,18 @@ fun LoginScreen(
             label = { Text("Password") },
             singleLine = true,
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                cursorColor = MaterialTheme.colorScheme.primary
+            ),
             trailingIcon = {
                 IconButton(onClick = { showPassword = !showPassword }) {
                     Icon(
-                        imageVector = if (showPassword) Icons.Default.Face else Icons.Default.Clear,
-                        contentDescription = if (showPassword) "Hide password" else "Show password"
+                        painter = painterResource(if (showPassword) R.drawable.icon_hide else R.drawable.icon_view),
+                        contentDescription = if (showPassword) "Hide password" else "Show password",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             },
@@ -82,7 +97,11 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            enabled = !state.isLoading
+            enabled = !state.isLoading,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
@@ -95,7 +114,10 @@ fun LoginScreen(
         }
 
         TextButton(
-            onClick = { onEvent(AuthEvent.OnNavigateToSignup) }
+            onClick = { onEvent(AuthEvent.OnNavigateToSignup) },
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary
+            )
         ) {
             Text("Don't have an account? Sign up")
         }
