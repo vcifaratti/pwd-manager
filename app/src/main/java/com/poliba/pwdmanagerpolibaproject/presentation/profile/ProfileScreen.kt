@@ -1,6 +1,9 @@
 package com.poliba.pwdmanagerpolibaproject.presentation.profile
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Build
@@ -9,8 +12,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.poliba.pwdmanagerpolibaproject.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,24 +38,14 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Profile Picture
-            Surface(
+            Image(
+                painterResource(id = R.drawable.image_pwd_manager),
+                contentDescription = "Profile Picture",
                 modifier = Modifier
-                    .size(120.dp),
-                shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Face,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier.size(60.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-            }
+                    .padding(24.dp)
+                    .size(120.dp)
+                    .clip(CircleShape)
+            )
 
             // User Info
             Text(
@@ -77,9 +73,11 @@ fun ProfileScreen(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Default.Build,
+                    painterResource(id = R.drawable.icon_logout ),
                     contentDescription = "Logout",
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(24.dp),
                 )
                 Text("Logout")
             }
