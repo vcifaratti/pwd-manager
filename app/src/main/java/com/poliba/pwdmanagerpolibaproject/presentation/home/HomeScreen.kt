@@ -70,7 +70,7 @@ fun HomeScreen(
                         onUrlClick = {
                             if (password.url?.isNotBlank() == true) {
                                 try {
-                                    onEvent(HomeEvent.OnOpenLink(context, password.url))
+                                    onEvent(HomeEvent.OnOpenLink(context, password.url!!))
                                 } catch (e: Exception) {
                                     // Handle invalid URL or other errors
                                 }
@@ -199,7 +199,7 @@ fun PasswordCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = password.url,
+                        text = password.url ?: "url not found",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )

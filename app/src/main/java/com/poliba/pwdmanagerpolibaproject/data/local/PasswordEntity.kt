@@ -7,25 +7,31 @@ import com.poliba.pwdmanagerpolibaproject.utils.EncryptionUtils
 @Entity(tableName = "passwords")
 data class PasswordEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val title: String,
-    val username: String,
-    private var encryptedPassword: String,
-    val url: String? = null,
-    val notes: String? = null
+    var id: Int = 0,
+    var title: String = "",
+    var username: String = "",
+    private var encryptedPassword: String = "",
+    var url: String? = null,
+    var notes: String? = null
 ) {
+    // Required empty constructor for Firebase
+    constructor() : this(0, "", "", "", null, null)
+
     // Getter for encrypted password
     fun getEncryptedPassword(): String = encryptedPassword
 
     // Getter for decrypted password
     fun getDecryptedPassword(): String {
-        val decrypted = EncryptionUtils.decryptPassword(encryptedPassword)
-        // If the decrypted password is still a hash, it means it's the old format
-        // In this case, we can't show the original password
-        return if (decrypted.length == 64) { // SHA-256 hash length
-            "Password stored in old format"
-        } else {
-            decrypted
+        return try {
+            val decrypted = EncryptionUtils.decryptPassword(encryptedPassword)
+            // Check if the decrypted password is still in the old format (SHA-256)
+            if (decrypted.length == 64) {
+                "Password stored in old format"
+            } else {
+                decrypted
+            }
+        } catch (e: Exception) {
+            "Error decrypting password"
         }
     }
 
@@ -42,13 +48,14 @@ data class PasswordEntity(
             url: String? = null,
             notes: String? = null
         ): PasswordEntity {
-            return PasswordEntity(
+            val entity = PasswordEntity(
                 title = title,
                 username = username,
-                encryptedPassword = EncryptionUtils.encryptPassword(password),
                 url = url,
                 notes = notes
             )
+            entity.setPassword(password)
+            return entity
         }
     }
 } 

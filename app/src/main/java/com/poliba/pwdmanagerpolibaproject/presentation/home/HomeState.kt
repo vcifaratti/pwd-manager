@@ -1,6 +1,7 @@
 package com.poliba.pwdmanagerpolibaproject.presentation.home
 
 import com.poliba.pwdmanagerpolibaproject.data.local.PasswordEntity
+import com.poliba.pwdmanagerpolibaproject.data.remote.SyncState
 import com.poliba.pwdmanagerpolibaproject.utils.PasswordData
 
 data class HomeState(
@@ -10,5 +11,6 @@ data class HomeState(
     val showAddPasswordDialog: Boolean = false,
     val showDeleteConfirmation: Boolean = false,
     val passwordToDelete: PasswordEntity? = null,
-    val viewingPassword: PasswordEntity? = null
+    val viewingPassword: PasswordEntity? = null,
+    val syncState: SyncState = SyncState.Idle
 )
