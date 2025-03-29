@@ -21,234 +21,285 @@ fun GeneratorScreen(
     val clipboardManager = LocalClipboardManager.current
     var showCopiedMessage by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Password Generator",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-
-        // Password Length Slider
-        Text(
-            text = "Password Length: ${state.passwordLength}",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Slider(
-            value = state.passwordLength.toFloat(),
-            onValueChange = {
-                onEvent(GeneratorEvent.OnPasswordLengthChange(it.toInt()))
-            },
-            valueRange = 8f..32f,
-            steps = 23,
+    Scaffold(
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Password Generator",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
 
-        // Character Type Checkboxes
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            // Password Length Slider
+            Text(
+                text = "Password Length: ${state.passwordLength}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Slider(
+                value = state.passwordLength.toFloat(),
+                onValueChange = {
+                    onEvent(GeneratorEvent.OnPasswordLengthChange(it.toInt()))
+                },
+                valueRange = 8f..32f,
+                steps = 23,
+                colors = SliderDefaults.colors(
+                    thumbColor = MaterialTheme.colorScheme.primary,
+                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Checkbox(
-                    checked = state.includeUppercase,
-                    onCheckedChange = {
-                        onEvent(GeneratorEvent.OnUppercaseChange(it))
-                    }
-                )
-                Text(
-                    text = "Uppercase Letters (A-Z)",
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
+                    .padding(horizontal = 16.dp)
+            )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Checkbox(
-                    checked = state.includeLowercase,
-                    onCheckedChange = {
-                        onEvent(GeneratorEvent.OnLowercaseChange(it))
-                    }
-                )
-                Text(
-                    text = "Lowercase Letters (a-z)",
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Checkbox(
-                    checked = state.includeNumbers,
-                    onCheckedChange = {
-                        onEvent(GeneratorEvent.OnNumbersChange(it))
-                    }
-                )
-                Text(
-                    text = "Numbers (0-9)",
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Checkbox(
-                    checked = state.includeSpecialChars,
-                    onCheckedChange = {
-                        onEvent(GeneratorEvent.OnSpecialCharsChange(it))
-                    }
-                )
-                Text(
-                    text = "Special Characters (!@#$%^&*)",
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-        }
-
-        // Generated Password Display
-        if (state.generatedPassword.isNotEmpty()) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
+            // Character Type Checkboxes
+            Column(modifier = Modifier.padding(16.dp)) {
                 Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(vertical = 4.dp)
+                ) {
+                    Checkbox(
+                        checked = state.includeUppercase,
+                        onCheckedChange = {
+                            onEvent(GeneratorEvent.OnUppercaseChange(it))
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary,
+                            uncheckedColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                    Text(
+                        text = "Uppercase Letters (A-Z)",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Checkbox(
+                        checked = state.includeLowercase,
+                        onCheckedChange = {
+                            onEvent(GeneratorEvent.OnLowercaseChange(it))
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary,
+                            uncheckedColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                    Text(
+                        text = "Lowercase Letters (a-z)",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Checkbox(
+                        checked = state.includeNumbers,
+                        onCheckedChange = {
+                            onEvent(GeneratorEvent.OnNumbersChange(it))
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary,
+                            uncheckedColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                    Text(
+                        text = "Numbers (0-9)",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Checkbox(
+                        checked = state.includeSpecialChars,
+                        onCheckedChange = {
+                            onEvent(GeneratorEvent.OnSpecialCharsChange(it))
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary,
+                            uncheckedColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                    Text(
+                        text = "Special Characters (!@#$%^&*)",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+
+            // Generated Password Display
+            if (state.generatedPassword.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = state.generatedPassword,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f)
                     )
                     IconButton(
                         onClick = {
                             clipboardManager.setText(AnnotatedString(state.generatedPassword))
-                            showCopiedMessage = true
+                            onEvent(GeneratorEvent.OnCopyPassword)
                         }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Share,
-                            contentDescription = "Copy to clipboard"
+                            contentDescription = "Copy password",
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
-            }
-        }
 
-        if (showCopiedMessage) {
-            LaunchedEffect(Unit) {
-                kotlinx.coroutines.delay(2000)
-                showCopiedMessage = false
+                Button(
+                    onClick = { onEvent(GeneratorEvent.OnCopyPassword) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("Save Password")
+                }
             }
-            Snackbar(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text("Password copied to clipboard")
+
+            if (showCopiedMessage) {
+                LaunchedEffect(Unit) {
+                    kotlinx.coroutines.delay(2000)
+                    showCopiedMessage = false
+                }
+                Snackbar(
+                    modifier = Modifier.padding(16.dp),
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.tertiaryContainer,
+                ) {
+                    Text("Password copied to clipboard")
+                }
             }
-        }
 
-        // Generate Button
-        Button(
-            onClick = { onEvent(GeneratorEvent.OnGeneratePassword) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("Generate New Password")
-        }
-
-        // Save Button (only show if there's a generated password)
-        if (state.generatedPassword.isNotEmpty()) {
+            // Generate Button
             Button(
-                onClick = { onEvent(GeneratorEvent.OnSaveClick) },
+                onClick = { onEvent(GeneratorEvent.OnGeneratePassword) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
-                Text("Save Password")
+                Text("Generate New Password")
+            }
+
+            // Save Dialog
+            if (state.showSaveDialog) {
+                AlertDialog(
+                    onDismissRequest = { onEvent(GeneratorEvent.OnCancelSave) },
+                    title = { Text("Save Password") },
+                    text = {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = state.passwordData.title,
+                                onValueChange = { onEvent(GeneratorEvent.OnPasswordDataChange("title", it)) },
+                                label = { Text("Title") },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                    cursorColor = MaterialTheme.colorScheme.primary
+                                ),
+                            )
+                            OutlinedTextField(
+                                value = state.passwordData.username,
+                                onValueChange = { onEvent(GeneratorEvent.OnPasswordDataChange("username", it)) },
+                                label = { Text("Username") },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                    cursorColor = MaterialTheme.colorScheme.primary
+                                ),
+                            )
+                            OutlinedTextField(
+                                value = state.passwordData.url,
+                                onValueChange = { onEvent(GeneratorEvent.OnPasswordDataChange("url", it)) },
+                                label = { Text("URL") },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                    cursorColor = MaterialTheme.colorScheme.primary
+                                ),
+                            )
+                            OutlinedTextField(
+                                value = state.passwordData.notes,
+                                onValueChange = { onEvent(GeneratorEvent.OnPasswordDataChange("notes", it)) },
+                                label = { Text("Notes") },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                    cursorColor = MaterialTheme.colorScheme.primary
+                                ),
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = { onEvent(GeneratorEvent.OnSavePassword) },
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text("Save")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { onEvent(GeneratorEvent.OnCancelSave) },
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
+                )
             }
         }
-    }
-
-    // Save Dialog
-    if (state.showSaveDialog) {
-        AlertDialog(
-            onDismissRequest = { onEvent(GeneratorEvent.OnCancelSave) },
-            title = { Text("Save Password") },
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedTextField(
-                        value = state.passwordData.title ?: "",
-                        onValueChange = { onEvent(GeneratorEvent.OnPasswordDataChange("title", it)) },
-                        label = { Text("Title") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = state.passwordData.username ?: "",
-                        onValueChange = { onEvent(GeneratorEvent.OnPasswordDataChange("username", it)) },
-                        label = { Text("Username") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = state.passwordData.url ?: "",
-                        onValueChange = { onEvent(GeneratorEvent.OnPasswordDataChange("url", it)) },
-                        label = { Text("URL (optional)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = state.passwordData.notes ?: "",
-                        onValueChange = { onEvent(GeneratorEvent.OnPasswordDataChange("notes", it)) },
-                        label = { Text("Notes (optional)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = { onEvent(GeneratorEvent.OnSavePassword) }
-                ) {
-                    Text("Save")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { onEvent(GeneratorEvent.OnCancelSave) }
-                ) {
-                    Text("Cancel")
-                }
-            }
-        )
     }
 }
 

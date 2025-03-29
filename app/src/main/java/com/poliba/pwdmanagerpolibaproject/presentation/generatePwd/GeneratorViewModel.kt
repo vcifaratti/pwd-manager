@@ -41,7 +41,7 @@ class GeneratorViewModel @Inject constructor(): ViewModel() {
             is GeneratorEvent.OnSpecialCharsChange -> {
                 state.copy(includeSpecialChars = event.include)
             }
-            is GeneratorEvent.OnSaveClick -> {
+            is GeneratorEvent.OnCopyPassword -> {
                 state.copy(showSaveDialog = true)
             }
             is GeneratorEvent.OnCancelSave -> {
