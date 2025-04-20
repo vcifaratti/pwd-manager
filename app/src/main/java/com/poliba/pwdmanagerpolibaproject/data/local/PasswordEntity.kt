@@ -40,6 +40,11 @@ data class PasswordEntity(
         encryptedPassword = EncryptionUtils.encryptPassword(password)
     }
 
+    // Setter for encrypted password (for Firebase synchronization)
+    fun setEncryptedPassword(encrypted: String) {
+        encryptedPassword = encrypted
+    }
+
     companion object {
         fun create(
             title: String,

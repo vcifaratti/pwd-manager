@@ -54,7 +54,12 @@ class FirebaseSync @Inject constructor(
         currentSyncListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d(TAG, "Firebase data changed: ${snapshot.childrenCount} passwords")
-                val firebasePasswords = snapshot.children.mapNotNull { it.getValue(PasswordEntity::class.java) }
+                // Convert FirebasePasswordEntity to PasswordEntity
+                val firebasePasswords = snapshot.children.mapNotNull { 
+                    it.getValue(FirebasePasswordEntity::class.java)?.let { firebaseEntity ->
+                        FirebasePasswordEntity.toPasswordEntity(firebaseEntity)
+                    }
+                }
                 
                 // Launch coroutine to update local database
                 coroutineScope.launch {
@@ -127,9 +132,12 @@ class FirebaseSync @Inject constructor(
             return
         }
         
+        // Converti in FirebasePasswordEntity sicuro
+        val firebaseEntity = FirebasePasswordEntity.fromPasswordEntity(password)
+        
         Log.d(TAG, "Uploading password ${password.id} for user $userId")
         val passwordsRef = database.getReference("users/$userId/passwords/${password.id}")
-        passwordsRef.setValue(password)
+        passwordsRef.setValue(firebaseEntity)
             .addOnSuccessListener {
                 Log.d(TAG, "Successfully uploaded password to Firebase")
                 _syncState.value = SyncState.Success
