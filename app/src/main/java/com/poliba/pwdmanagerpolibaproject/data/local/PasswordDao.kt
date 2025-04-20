@@ -14,10 +14,10 @@ interface PasswordDao {
     @Query("SELECT * FROM passwords WHERE id = :id")
     suspend fun getPasswordById(id: Int): PasswordEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPassword(password: PasswordEntity)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertPassword(password: PasswordEntity): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPasswords(passwords: List<PasswordEntity>)
 
     @Update

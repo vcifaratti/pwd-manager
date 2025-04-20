@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.poliba.pwdmanagerpolibaproject.data.local.PasswordDao
 import com.poliba.pwdmanagerpolibaproject.data.local.PasswordEntity
 import com.poliba.pwdmanagerpolibaproject.data.remote.FirebaseSync
@@ -21,16 +22,25 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val dao: PasswordDao,
-    private val firebaseSync: FirebaseSync
+    private val firebaseSync: FirebaseSync,
+    private val auth: FirebaseAuth
 ): ViewModel() {
 
     private val TAG = "HomeViewModel"
     var state by mutableStateOf(HomeState())
         private set
+    
+    // Get current user ID
+    private val currentUserId: String
+        get() = auth.currentUser?.uid ?: "not_logged_in"
 
     init {
         viewModelScope.launch {
             dao.getAllPasswords().collectLatest { passwords ->
+                Log.d(TAG, "Passwords received from database: ${passwords.size}")
+                passwords.forEachIndexed { index, pwd ->
+                    Log.d(TAG, "Password $index: id=${pwd.id}, title=${pwd.title}, username=${pwd.username}")
+                }
                 state = state.copy(
                     passwords = passwords
                 )
@@ -44,8 +54,10 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-        // Start Firebase sync
-        firebaseSync.syncWithFirebase("current_user_id")
+        // Start Firebase sync with current user ID
+        auth.currentUser?.let { user ->
+            firebaseSync.syncWithFirebase(user.uid)
+        }
     }
 
     private fun openUrl(context: Context, url: String) {
@@ -64,7 +76,6 @@ class HomeViewModel @Inject constructor(
             context.startActivity(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Error opening URL: ${e.message}")
-            // TODO: Show error message to user
         }
     }
 
@@ -95,13 +106,31 @@ class HomeViewModel @Inject constructor(
                             url = event.passwordData.url,
                             notes = event.passwordData.notes
                         )
-                        dao.insertPassword(passwordEntity)
-                        // Upload to Firebase
-                        firebaseSync.uploadToFirebase("current_user_id", passwordEntity)
-                        state = state.copy(
-                            newPasswordData = null,
-                            showAddPasswordDialog = false
-                        )
+                        
+                        Log.d(TAG, "Saving new password: ${passwordEntity.title}, with ID before insert: ${passwordEntity.id}")
+                        
+                        val insertedId = dao.insertPassword(passwordEntity)
+                        
+                        Log.d(TAG, "Insert result ID: $insertedId")
+                        
+                        // If the insertion was successful
+                        if (insertedId > 0) {
+                            // Need to get the newly assigned ID
+                            passwordEntity.id = insertedId.toInt()
+                            Log.d(TAG, "Password saved with ID: ${passwordEntity.id}")
+                            
+                            // Upload to Firebase with user ID
+                            firebaseSync.uploadToFirebase(currentUserId, passwordEntity)
+                            
+                            state = state.copy(
+                                newPasswordData = null,
+                                showAddPasswordDialog = false
+                            )
+                        } else {
+                            // Handle case where insertion failed (likely due to conflict)
+                            Log.e(TAG, "Failed to insert password, possible conflict")
+                            // You might want to add feedback to the user here
+                        }
                     }
                 }
             }
@@ -124,8 +153,8 @@ class HomeViewModel @Inject constructor(
                 state.passwordToDelete?.let { password ->
                     viewModelScope.launch {
                         dao.deletePassword(password)
-                        // Delete from Firebase
-                        firebaseSync.deleteFromFirebase("current_user_id", password.id)
+                        // Delete from Firebase with user ID
+                        firebaseSync.deleteFromFirebase(currentUserId, password.id)
                         state = state.copy(
                             showDeleteConfirmation = false,
                             passwordToDelete = null
@@ -143,8 +172,8 @@ class HomeViewModel @Inject constructor(
                     )
                     updatedPassword.setPassword(event.newPassword)
                     dao.updatePassword(updatedPassword)
-                    // Update in Firebase
-                    firebaseSync.uploadToFirebase("current_user_id", updatedPassword)
+                    // Update in Firebase with user ID
+                    firebaseSync.uploadToFirebase(currentUserId, updatedPassword)
                 }
             }
             is HomeEvent.OnSearchQueryChange -> {

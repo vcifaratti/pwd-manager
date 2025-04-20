@@ -1,6 +1,6 @@
 package com.poliba.pwdmanagerpolibaproject.presentation.home
 
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,9 +8,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,7 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.poliba.pwdmanagerpolibaproject.R
 import com.poliba.pwdmanagerpolibaproject.data.local.PasswordEntity
 import com.poliba.pwdmanagerpolibaproject.ui.theme.Blue400
-import com.poliba.pwdmanagerpolibaproject.ui.theme.Blue500
+
+private const val TAG = "HomeScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,10 +32,18 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     
+    // Log passwords for debugging
+    LaunchedEffect(state.passwords) {
+        Log.d(TAG, "HomeScreen received ${state.passwords.size} passwords")
+        state.passwords.forEachIndexed { index, pwd ->
+            Log.d(TAG, "UI Password $index: id=${pwd.id}, title=${pwd.title}")
+        }
+    }
+    
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Your Passwords") }
+                title = { Text("Your Passwords (${state.passwords.size})") }
             )
         },
         floatingActionButton = {
