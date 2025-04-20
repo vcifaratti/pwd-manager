@@ -3,9 +3,9 @@ package com.poliba.pwdmanagerpolibaproject.data.remote
 import com.poliba.pwdmanagerpolibaproject.data.local.PasswordEntity
 
 /**
- * Versione sicura dell'entità PasswordEntity per Firebase.
- * Questa classe non contiene le funzioni di decriptazione 
- * e non include metodi che potrebbero esporre la password in chiaro.
+ * Secure version of the PasswordEntity entity for Firebase.
+ * This class does not contain the decryption functions
+ * and does not include methods that would expose the password in plain text.
  */
 data class FirebasePasswordEntity(
     var id: Int = 0,
@@ -15,14 +15,13 @@ data class FirebasePasswordEntity(
     var url: String? = null,
     var notes: String? = null
 ) {
-    // Costruttore vuoto richiesto da Firebase
     constructor() : this(0, "", "", "", null, null)
     
     companion object {
         /**
-         * Converte una PasswordEntity in FirebasePasswordEntity
-         * per garantire che solo la versione criptata della password 
-         * venga salvata su Firebase
+         * Converts a PasswordEntity to FirebasePasswordEntity
+         * to ensure that only the encrypted version of the password
+         * is saved on Firebase
          */
         fun fromPasswordEntity(entity: PasswordEntity): FirebasePasswordEntity {
             return FirebasePasswordEntity(
@@ -34,10 +33,10 @@ data class FirebasePasswordEntity(
                 notes = entity.notes
             )
         }
-        
+
         /**
-         * Converte una FirebasePasswordEntity in PasswordEntity
-         * per l'uso locale nell'app
+         * Converts a FirebasePasswordEntity to PasswordEntity
+         * for local use in the app
          */
         fun toPasswordEntity(firebaseEntity: FirebasePasswordEntity): PasswordEntity {
             val entity = PasswordEntity(
@@ -47,7 +46,6 @@ data class FirebasePasswordEntity(
                 url = firebaseEntity.url,
                 notes = firebaseEntity.notes
             )
-            // Imposta la password criptata direttamente
             entity.setEncryptedPassword(firebaseEntity.encryptedPassword)
             return entity
         }
