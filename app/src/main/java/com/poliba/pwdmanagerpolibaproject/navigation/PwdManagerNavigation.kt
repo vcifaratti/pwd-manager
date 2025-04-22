@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -30,6 +31,10 @@ import com.poliba.pwdmanagerpolibaproject.presentation.profile.ProfileEvent
 import com.poliba.pwdmanagerpolibaproject.presentation.welcome.WelcomeViewModel
 import com.poliba.pwdmanagerpolibaproject.presentation.profile.ProfileScreen
 import com.poliba.pwdmanagerpolibaproject.presentation.profile.ProfileViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -316,6 +321,26 @@ private fun handleGeneratorEvent(
     navController: NavHostController
 ) {
     when (event) {
+        is GeneratorEvent.OnSavePassword -> {
+            if (event.passwordData.isValid()) {
+                viewModel.handleEvent(event)
+                
+                // Usa una coroutine per ritardare leggermente la navigazione
+                CoroutineScope(Dispatchers.Main).launch {
+                    // Attendi 500ms per dare tempo al database di completare l'operazione
+                    delay(500)
+                    
+                    // Naviga al grafo principale HOME, forzando il refresh
+                    navController.navigate(Graph.HOME) {
+                        popUpTo(Graph.HOME) {
+                            inclusive = true  // Rimuove e ricrea il grafo HOME
+                        }
+                    }
+                }
+            } else {
+                viewModel.handleEvent(event)
+            }
+        }
         else -> viewModel.handleEvent(event)
     }
 }

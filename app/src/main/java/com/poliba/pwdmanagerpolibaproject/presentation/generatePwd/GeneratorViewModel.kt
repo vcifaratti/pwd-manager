@@ -1,16 +1,27 @@
 package com.poliba.pwdmanagerpolibaproject.presentation.generatePwd
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.poliba.pwdmanagerpolibaproject.data.local.PasswordDao
+import com.poliba.pwdmanagerpolibaproject.data.local.PasswordEntity
+import com.poliba.pwdmanagerpolibaproject.data.remote.FirebaseSync
 import com.poliba.pwdmanagerpolibaproject.utils.PasswordData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.random.Random
 
 @HiltViewModel
-class GeneratorViewModel @Inject constructor(): ViewModel() {
+class GeneratorViewModel @Inject constructor(
+    private val dao: PasswordDao,
+    private val firebaseSync: FirebaseSync,
+    private val auth: FirebaseAuth
+): ViewModel() {
 
     var state by mutableStateOf(GeneratorState())
         private set
@@ -24,7 +35,7 @@ class GeneratorViewModel @Inject constructor(): ViewModel() {
         state = when (event) {
             is GeneratorEvent.OnGeneratePassword -> {
                 generatePassword()
-                state.copy(showSaveDialog = true)
+                state.copy(showSaveDialog = false)
             }
             is GeneratorEvent.OnPasswordLengthChange -> {
                 state.copy(passwordLength = event.length.coerceIn(8, 32))
@@ -59,10 +70,44 @@ class GeneratorViewModel @Inject constructor(): ViewModel() {
                 )
             }
             is GeneratorEvent.OnSavePassword -> {
-                state.copy(
-                    showSaveDialog = false,
-                    passwordData = PasswordData("", "", "", "", "")
+                if (event.passwordData.isValid()) {
+                    savePasswordToDatabase(event.passwordData)
+                    state.copy(showSaveDialog = false)
+                } else {
+                    state.copy(showSaveDialog = true)
+                }
+            }
+        }
+    }
+
+    private fun savePasswordToDatabase(passwordData: PasswordData) {
+        viewModelScope.launch {
+            try {
+                val passwordEntity = PasswordEntity.create(
+                    title = passwordData.title,
+                    username = passwordData.username,
+                    password = state.generatedPassword,
+                    url = passwordData.url,
+                    notes = passwordData.notes
                 )
+                
+                // Ottieni l'ID assegnato dal database locale
+                val insertedId = dao.insertPassword(passwordEntity)
+                
+                // Se l'inserimento è riuscito
+                if (insertedId > 0) {
+                    // Aggiorna l'ID dell'entità
+                    passwordEntity.id = insertedId.toInt()
+                    
+                    // Carica la password in Firebase con l'ID corretto
+                    val userId = auth.currentUser?.uid ?: ""
+                    if (userId.isNotBlank()) {
+                        firebaseSync.uploadToFirebase(userId, passwordEntity)
+                    }
+                }
+            } catch (e: Exception) {
+                // Gestisci eventuali errori
+                Log.e("GeneratorViewModel", "Error saving password: ${e.message}")
             }
         }
     }

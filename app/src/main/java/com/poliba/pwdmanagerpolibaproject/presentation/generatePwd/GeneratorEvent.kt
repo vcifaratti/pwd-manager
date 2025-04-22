@@ -1,5 +1,7 @@
 package com.poliba.pwdmanagerpolibaproject.presentation.generatePwd
 
+import com.poliba.pwdmanagerpolibaproject.utils.PasswordData
+
 sealed class GeneratorEvent {
     data object OnGeneratePassword : GeneratorEvent()
     data class OnPasswordLengthChange(val length: Int) : GeneratorEvent()
@@ -10,5 +12,5 @@ sealed class GeneratorEvent {
     data object OnCopyPassword : GeneratorEvent()
     data object OnCancelSave : GeneratorEvent()
     data class OnPasswordDataChange(val field: String, val value: String) : GeneratorEvent()
-    data object OnSavePassword : GeneratorEvent()
+    data class OnSavePassword(val passwordData: PasswordData) : GeneratorEvent()
 }

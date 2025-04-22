@@ -1,6 +1,9 @@
 package com.poliba.pwdmanagerpolibaproject.presentation.generatePwd
 
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -20,6 +23,7 @@ fun GeneratorScreen(
 ) {
     val clipboardManager = LocalClipboardManager.current
     var showCopiedMessage by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     Scaffold(
     ) { paddingValues ->
@@ -27,7 +31,8 @@ fun GeneratorScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
@@ -160,7 +165,9 @@ fun GeneratorScreen(
             // Generated Password Display
             if (state.generatedPassword.isNotEmpty()) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -185,7 +192,9 @@ fun GeneratorScreen(
 
                 Button(
                     onClick = { onEvent(GeneratorEvent.OnCopyPassword) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
@@ -241,6 +250,12 @@ fun GeneratorScreen(
                                     focusedLabelColor = MaterialTheme.colorScheme.primary,
                                     cursorColor = MaterialTheme.colorScheme.primary
                                 ),
+                                isError = state.passwordData.title.isBlank(),
+                                supportingText = {
+                                    if (state.passwordData.title.isBlank()) {
+                                        Text("Title is required")
+                                    }
+                                }
                             )
                             OutlinedTextField(
                                 value = state.passwordData.username,
@@ -252,6 +267,12 @@ fun GeneratorScreen(
                                     focusedLabelColor = MaterialTheme.colorScheme.primary,
                                     cursorColor = MaterialTheme.colorScheme.primary
                                 ),
+                                isError = state.passwordData.username.isBlank(),
+                                supportingText = {
+                                    if (state.passwordData.username.isBlank()) {
+                                        Text("Username is required")
+                                    }
+                                }
                             )
                             OutlinedTextField(
                                 value = state.passwordData.url,
@@ -278,11 +299,13 @@ fun GeneratorScreen(
                         }
                     },
                     confirmButton = {
+                        val isValid = state.passwordData.title.isNotBlank() && state.passwordData.username.isNotBlank()
                         TextButton(
-                            onClick = { onEvent(GeneratorEvent.OnSavePassword) },
+                            onClick = { onEvent(GeneratorEvent.OnSavePassword(state.passwordData)) },
                             colors = ButtonDefaults.textButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary
-                            )
+                            ),
+                            enabled = isValid
                         ) {
                             Text("Save")
                         }
